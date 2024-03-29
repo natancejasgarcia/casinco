@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Log;
+
 
 class User extends Authenticatable
 {
@@ -59,21 +61,23 @@ class User extends Authenticatable
     }
     public function spendMoney($amount)
     {
+        Log::info("Intentando gastar $amount monedas del usuario con ID {$this->id}");
         if ($this->money >= $amount) {
-            $this->decrement('money', $amount); // Decrementa la columna 'money' automáticamente y guarda el cambio
+            $this->decrement('money', $amount);
+            // El método decrement ya persiste el cambio, por lo que no necesitas llamar a $this->save()
 
             // Registro de la transacción como gasto
             $this->transactions()->create([
-                'type' => 'withdraw',
+                'type' => 'withdrawal', // Asegúrate de que 'withdraw' es un string
                 'amount' => $amount,
+                'user_id' => $this->id, // Asegúrate de pasar el id del usuario si es necesario
             ]);
-
+            Log::info("Transacción completada: {$amount} monedas descontadas del usuario: {$this->id}");
             return true;
         }
-
+        Log::info("Error al descontar monedas: saldo insuficiente para el usuario: {$this->id}");
         return false; // No hay suficiente dinero
     }
-
     // Relación con el modelo Transaction
     public function transactions()
     {

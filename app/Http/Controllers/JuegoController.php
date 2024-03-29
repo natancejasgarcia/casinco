@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class JuegoController extends Controller
 {
@@ -11,7 +12,6 @@ class JuegoController extends Controller
     {
         return view('guessnumber');
     }
-
     public function jugar(Request $request)
     {
         $request->validate([
@@ -28,13 +28,13 @@ class JuegoController extends Controller
             ]);
         }
 
+        // Descontamos las 100 monedas por jugar aquí.
+        $user->spendMoney(100);
+
         $numeroElegido = $request->numero_elegido;
         $rango = $request->rango;
         $numeroMaquina = mt_rand(1, $rango);
         $multiplier = $this->determinarMultiplicador($rango);
-
-        // Aquí, simplemente descontamos las 100 monedas por jugar.
-        $user->spendMoney(100);
 
         if ($numeroElegido === $numeroMaquina) {
             // Calcula las ganancias basadas en el multiplicador
@@ -45,13 +45,20 @@ class JuegoController extends Controller
                 'success' => true,
                 'message' => "¡Has ganado! Tus ganancias son: $ganancias monedas.",
                 'userMoney' => $user->money,
+                'machineNumber' => $numeroMaquina,
+                'win' => true,
             ]);
         } else {
             // Si no hay victoria, solo se devuelve el mensaje correspondiente.
+            $user->money -= 100; // Asegúrate de descontar las monedas por jugar si no se hizo anteriormente
+            $user->save();
+
             return response()->json([
                 'success' => false,
                 'message' => "Lo siento, no has ganado. El número de la máquina era: $numeroMaquina.",
                 'userMoney' => $user->money,
+                'machineNumber' => $numeroMaquina,
+                'win' => false,
             ]);
         }
     }
@@ -60,15 +67,15 @@ class JuegoController extends Controller
     {
         switch ($rango) {
             case 10:
-                return 1.5;
+                return 3;
             case 25:
-                return 4;
+                return 10;
             case 50:
-                return 8;
+                return 20;
             case 75:
-                return 16;
+                return 50;
             case 100:
-                return 32;
+                return 100;
             default:
                 // Considera lanzar una excepción o manejar este caso de forma adecuada
                 return 0;

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->enum('type', ['deposit', 'withdrawal']);
             $table->decimal('amount', 8, 2);
             $table->timestamps();
+            $table->string('type');
         });
     }
-    
+
     /**
      * Reverse the migrations.
      */
