@@ -49,9 +49,6 @@ class JuegoController extends Controller
                 'win' => true,
             ]);
         } else {
-            // Si no hay victoria, solo se devuelve el mensaje correspondiente.
-            $user->money -= 100; // Asegúrate de descontar las monedas por jugar si no se hizo anteriormente
-            $user->save();
 
             return response()->json([
                 'success' => false,

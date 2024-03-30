@@ -70,6 +70,7 @@
         <p id="playerNumber" class="mt-4"></p>
         <p id="gameResult" class="mt-4"></p>
     </div>
+    <audio id="coinSound" src="{{ asset('sonidos/sonidodedinero.mp3') }}"></audio>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -114,7 +115,12 @@
                         if (data.userMoney !== undefined) {
                             document.querySelector('.user-money').textContent = `Tienes ${data.userMoney}`;
                         }
-                        selectedNumber = null; // Resetea el número seleccionado para el próximo juego
+                        // Si el jugador gana, reproduce el sonido de monedas
+                        if (data.win) {
+                            var coinSound = document.getElementById("coinSound");
+                            coinSound.play();
+                        }
+
                     })
                     .catch(error => {
                         console.error('Error:', error);
