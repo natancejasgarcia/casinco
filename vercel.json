@@ -18,6 +18,10 @@
       "src": "/(.*)",
       "dest": "/public/build/$1",
       "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/"
     }
   ],
   "env": {
