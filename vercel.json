@@ -1,20 +1,37 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "public/index.php",
-        "use": "@vercel/php"
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "public/build"
       }
-    ],
-    "routes": [
-      {
-        "src": "/(.*).(js|css|svg|png)",
-        "headers": { "Cache-Control": "s-maxage=31536000,immutable" },
-        "dest": "/public/$1.$2"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/public/index.php"
-      }
-    ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.php"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/build/$1",
+      "continue": true
+    }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "true",
+    "APP_URL": "https://casinco.com",
+    "APP_CONFIG_CACHE": "/tmp/config.php",
+    "APP_EVENTS_CACHE": "/tmp/events.php",
+    "APP_PACKAGES_CACHE": "/tmp/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/routes.php",
+    "APP_SERVICES_CACHE": "/tmp/services.php",
+    "VIEW_COMPILED_PATH": "/tmp",
+    "CACHE_DRIVER": "array",
+    "LOG_CHANNEL": "stderr",
+    "SESSION_DRIVER": "cookie"
+  }
 }
